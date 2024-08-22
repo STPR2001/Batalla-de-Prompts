@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/STPR2001/Batalla-de-Prompts#readme",
   "dependencies": {
-    "express": "^4.19.2"
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
+    "jsonwebtoken": "^7.4.3",
+    "mongoose": "^5.2.10",
+    "mongodb": "^6.8.0"
   }
 }
