@@ -10,6 +10,7 @@ const user = require("./routes/user.route");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/js", express.static(__dirname + "/views/home"));
 
 app.get("/", function (req, res, next) {
   res.sendFile(__dirname + "/views/home/page.html");

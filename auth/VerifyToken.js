@@ -1,6 +1,9 @@
 var jwt = require("jsonwebtoken");
+var cookieParser = require("cookie-parser");
 var config = require("../config/config");
-function verifyToken(req, res, next) {
+
+exports.verifyToken = function (req, res, next) {
+  var token = req.cookie.token;
   var token = req.headers["x-access-token"];
   if (!token)
     return res.status(403).send({ auth: false, message: "Sin token." });
@@ -12,5 +15,4 @@ function verifyToken(req, res, next) {
     req.userId = decoded.id;
     next();
   });
-}
-module.exports = verifyToken;
+};

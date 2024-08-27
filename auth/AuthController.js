@@ -1,5 +1,6 @@
 var express = require("express");
 var mongoose = require("mongoose");
+var cookieParser = require("cookie-parser");
 var router = express.Router();
 var bodyParser = require("body-parser");
 var VerifyToken = require("./VerifyToken");
@@ -37,6 +38,7 @@ exports.user_login = function (req, res) {
     var token = jwt.sign({ id: user._id }, config.secret, {
       expiresIn: 86400, // expira en 24 hours
     });
+    res.cookie(token, token);
     res.status(200).send({ auth: true, token: token });
   });
 };
