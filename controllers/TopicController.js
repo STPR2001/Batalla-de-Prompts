@@ -1,15 +1,10 @@
 var express = require("express");
 var mongoose = require("mongoose");
-var cookieParser = require("cookie-parser");
 var router = express.Router();
 var bodyParser = require("body-parser");
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 var Topic = require("../models/topic");
-
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
-var config = require("../config/config");
 
 exports.topic_create = async function (req, res, next) {
   try {

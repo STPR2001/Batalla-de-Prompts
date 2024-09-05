@@ -1,3 +1,14 @@
+
+
+
+
+
+
+
+
+
+
+
 async function generarImagen(jugador) {
   const inputId = `input${jugador}`;
   const imagenesDiv = document.getElementById(`imagenes${jugador}`);

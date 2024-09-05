@@ -10,6 +10,7 @@ var io = require("socket.io")(server);
 
 const user = require("./routes/user.route");
 const topic = require("./routes/topic.route");
+const game = require("./routes/game.route");
 
 // Define the CORS options
 const corsOptions = {
@@ -30,6 +31,7 @@ app.get("/", function (req, res, next) {
 
 app.use("/api/auth", user);
 app.use("/api/topic", topic);
+app.use("/api/game", game);
 
 app.get("/api", function (req, res) {
   res.status(200).send("API works.");
