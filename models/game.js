@@ -4,6 +4,8 @@ var GameSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   player1: String,
   player2: String,
+  time: String,
+  cant_img: String,
   date: { type: Date, default: Date.now }, //ver si incluye hora
   winner: String,
   topic: {

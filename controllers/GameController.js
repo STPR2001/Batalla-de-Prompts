@@ -20,13 +20,14 @@ exports.game_create = async function (req, res, next) {
       _id: new mongoose.Types.ObjectId(),
       player1: req.body.player1,
       player2: req.body.player2,
+      time: req.body.time,
+      cant_img: req.body.cant_img,
       topic: randomTopic,
       status: true,
     });
 
     const savedGame = await game.save();
-    res.send("Partida creada correctamente.");
-    res.redirect(`/api/game/findById/${savedGame._id}`); //ver esto
+    res.send(savedGame._id); //devuelvo el id como respuesta
   } catch (err) {
     return next(err);
   }
@@ -38,7 +39,7 @@ exports.game_findById = async function (req, res) {
     if (!game) {
       return res.status(404).send("Juego no encontrado");
     }
-    res.render("viewGame", { game }); // ver aca, cambiar esto.
+    res.json(game);
   } catch (err) {
     res.status(500).send(err.message);
   }

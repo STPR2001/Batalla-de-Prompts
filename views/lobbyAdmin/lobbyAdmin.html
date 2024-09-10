@@ -14,7 +14,7 @@
   </head>
   <body>
     <div class="container mt-5">
-      <h1 class="text-center">Bienvenido @user</h1>
+      <h1 class="text-center">Bienvenido</h1>
 
       <div class="card my-4">
         <div class="card-header">
@@ -43,7 +43,7 @@
           <h4>Iniciar juego</h4>
         </div>
         <div class="card-body">
-          <form id="iniciarJuegoForm">
+          <form id="iniciarJuegoForm" onsubmit="iniciarPartida(event)">
             <div class="row mb-3">
               <div class="col">
                 <label for="jugador1" class="form-label">Jugador 1</label>

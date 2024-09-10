@@ -27,7 +27,7 @@ socket.on("actualizarListaJugadores2", (jugadores) => {
 });
 
 async function cargarTema(event) {
-  event.preventDefault(); // Evitar que el formulario se envíe de manera convencional
+  event.preventDefault();
 
   const temaInput = document.getElementById("temaInput").value;
 
@@ -66,6 +66,51 @@ async function cargarTema(event) {
       const errorMsg = await response.text();
       console.error("Error al cargar el tema:", errorMsg);
       alert(`Error al cargar el tema: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error de conexión:", error);
+    alert("Ocurrió un error al conectar con el servidor.");
+  }
+}
+
+async function iniciarPartida(event) {
+  event.preventDefault();
+
+  const jugador1 = null; // ver aca
+  const jugador2 = null; // ver aca
+  const tiempoJuego = document.getElementById("tiempoJuego").value;
+  const cantidadImagenes = document.getElementById("cantidadImagenes").value;
+
+  const data = {
+    player1: jugador1,
+    player2: jugador2,
+    time: tiempoJuego,
+    cant_img: cantidadImagenes,
+  };
+
+  try {
+    const response = await fetch("http://localhost:3000/api/game/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    if (response.ok) {
+      const contentType = response.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        const result = await response.json();
+        console.log("Partida creada con éxito:", result);
+
+        const partidaId = result;
+        window.location.href = `/partida/partida.html?id=${partidaId}`; //redirige con el id de partida como paramaetro
+      }
+
+      //redirigir?
+    } else {
+      const errorMsg = await response.text();
+      console.error("Error al crear partida:", errorMsg);
     }
   } catch (error) {
     console.error("Error de conexión:", error);
