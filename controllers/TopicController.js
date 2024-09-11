@@ -18,3 +18,15 @@ exports.topic_create = async function (req, res, next) {
     return next(err);
   }
 };
+
+exports.topic_findById = async function (req, res) {
+  try {
+    const topic = await Topic.findById(req.params.id).exec();
+    if (!topic) {
+      return res.status(404).send("Topic no encontrado");
+    }
+    res.json(topic);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+};

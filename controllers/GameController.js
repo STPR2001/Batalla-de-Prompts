@@ -44,3 +44,15 @@ exports.game_findById = async function (req, res) {
     res.status(500).send(err.message);
   }
 };
+
+exports.game_updateWinner = async function (req, res) {
+  const partidaId = req.params.id;
+  const { winner } = req.body;
+
+  try {
+    const game = await Game.findByIdAndUpdate(partidaId, { winner }, { new: true });
+    res.status(200).json(game);
+  } catch (error) {
+    res.status(500).json({ error: "Error al actualizar ganador" });
+  }
+};

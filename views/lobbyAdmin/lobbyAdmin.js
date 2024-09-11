@@ -104,10 +104,9 @@ async function iniciarPartida(event) {
         console.log("Partida creada con éxito:", result);
 
         const partidaId = result;
-        window.location.href = `/partida/partida.html?id=${partidaId}`; //redirige con el id de partida como paramaetro
+        window.location.href = `/partida/partida.html?id=${partidaId}`;
       }
 
-      //redirigir?
     } else {
       const errorMsg = await response.text();
       console.error("Error al crear partida:", errorMsg);
