@@ -13,3 +13,5 @@ function unirseAlLobby() {
     document.getElementById("nombreJugador").value = "";
   }
 }
+
+

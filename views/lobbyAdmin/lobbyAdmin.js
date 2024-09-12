@@ -76,14 +76,21 @@ async function cargarTema(event) {
 async function iniciarPartida(event) {
   event.preventDefault();
 
-  const jugador1 = null; // ver aca
-  const jugador2 = null; // ver aca
+  const jugador1 = document.getElementById("listaJugadores1");
+  const selectedPlayer1 = Array.from(jugador1.selectedOptions).map(
+    (option) => option.value
+  );
+  const jugador2 = document.getElementById("listaJugadores2");
+  const selectedPlayer2 = Array.from(jugador2.selectedOptions).map(
+    (option) => option.value
+  );
+
   const tiempoJuego = document.getElementById("tiempoJuego").value;
   const cantidadImagenes = document.getElementById("cantidadImagenes").value;
 
   const data = {
-    player1: jugador1,
-    player2: jugador2,
+    player1: selectedPlayer1[0],
+    player2: selectedPlayer2[0],
     time: tiempoJuego,
     cant_img: cantidadImagenes,
   };
@@ -104,9 +111,16 @@ async function iniciarPartida(event) {
         console.log("Partida creada con éxito:", result);
 
         const partidaId = result;
+
+        socket.emit(
+          "redirigirJugadores",
+          selectedPlayer1[0],
+          selectedPlayer2[0],
+          `/partida/partida.html?id=${partidaId}`
+        );
+
         window.location.href = `/partida/partida.html?id=${partidaId}`;
       }
-
     } else {
       const errorMsg = await response.text();
       console.error("Error al crear partida:", errorMsg);
