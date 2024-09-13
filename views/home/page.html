@@ -8,6 +8,27 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link href="home.css" rel="stylesheet" />
+    <style>
+      footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #4f4f4f;
+        color: rgb(255, 255, 255);
+        padding: 10px 0;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .footer-content img {
+        margin-right: 10px;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
@@ -56,6 +77,19 @@
         </button>
       </div>
     </div>
+
+    <footer class="text-center">
+      <div class="container footer-content">
+        <img
+          src="../imgs/logo.png"
+          alt="Logo Tecnólogo en Informática"
+          style="width: 70px; height: auto"
+        />
+        <p class="mb-0">
+          &copy; 2024 | Desarrollado por Santiago Perron y Matias Moraga
+        </p>
+      </div>
+    </footer>
 
     <!-- Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

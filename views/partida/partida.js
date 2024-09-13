@@ -1,10 +1,13 @@
+const socket = io();
 const params = new URLSearchParams(window.location.search);
 const partidaId = params.get("id");
 console.log("ID de la partida:", partidaId);
 traerDatosPartida(partidaId);
 
 async function traerDatosPartida(partidaId) {
-  const url = `http://localhost:3000/api/game/findById/${encodeURIComponent(partidaId)}`;
+  const url = `http://localhost:3000/api/game/findById/${encodeURIComponent(
+    partidaId
+  )}`;
 
   try {
     const response = await fetch(url, {
@@ -25,26 +28,28 @@ async function traerDatosPartida(partidaId) {
 
       iniciarTemporizador(data.time);
 
+      traerSesiones(nombreJugador1, nombreJugador2);
+
       let contadorJugador1 = 0;
       let contadorJugador2 = 0;
       const maxImagenes = data.cant_img;
 
       document.getElementById("btnJugador1").onclick = function () {
         if (contadorJugador1 < maxImagenes) {
-          generarImagen('Jugador1');
+          generarImagen("Jugador1");
           contadorJugador1++;
           if (contadorJugador1 == maxImagenes) {
-            desactivarBoton('btnJugador1');
+            desactivarBoton("btnJugador1");
           }
         }
       };
 
       document.getElementById("btnJugador2").onclick = function () {
         if (contadorJugador2 < maxImagenes) {
-          generarImagen('Jugador2');
+          generarImagen("Jugador2");
           contadorJugador2++;
           if (contadorJugador2 == maxImagenes) {
-            desactivarBoton('btnJugador2');
+            desactivarBoton("btnJugador2");
           }
         }
       };
@@ -63,7 +68,7 @@ function desactivarBoton(botonId) {
   boton.textContent = "Límite alcanzado";
 }
 
-async function traerTopic(topicId){
+async function traerTopic(topicId) {
   console.log(topicId);
   const url = `http://localhost:3000/api/topic/findById/${encodeURIComponent(
     topicId
@@ -96,7 +101,9 @@ async function generarImagen(jugador) {
     return;
   }
 
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
+  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(
+    prompt
+  )}`;
 
   try {
     const response = await fetch(url, { method: "GET" });
@@ -148,11 +155,11 @@ function iniciarTemporizador(minutos) {
 }
 
 function finalizarPartida() {
-  desactivarBoton('btnJugador1');
-  desactivarBoton('btnJugador2');
+  desactivarBoton("btnJugador1");
+  desactivarBoton("btnJugador2");
 
-  mostrarSelectorImagenes('Jugador1');
-  mostrarSelectorImagenes('Jugador2');
+  mostrarSelectorImagenes("Jugador1");
+  mostrarSelectorImagenes("Jugador2");
 }
 
 function mostrarSelectorImagenes(jugador) {
@@ -160,15 +167,22 @@ function mostrarSelectorImagenes(jugador) {
   const seleccionButton = document.createElement("button");
   seleccionButton.textContent = `Seleccionar imagen para ${jugador}`;
   seleccionButton.className = "btn btn-success";
-  
+
   seleccionButton.onclick = function () {
-    const seleccion = document.querySelector(`input[name="seleccion${jugador}"]:checked`);
+    const seleccion = document.querySelector(
+      `input[name="seleccion${jugador}"]:checked`
+    );
     if (seleccion) {
       sessionStorage.setItem(`seleccion${jugador}`, seleccion.value);
       alert(`${jugador} ha seleccionado su imagen.`);
-      
-      if (sessionStorage.getItem("seleccionJugador1") && sessionStorage.getItem("seleccionJugador2")) {
-        window.location.href = `/votacion/votacion.html?id=${encodeURIComponent(partidaId)}`;
+
+      if (
+        sessionStorage.getItem("seleccionJugador1") &&
+        sessionStorage.getItem("seleccionJugador2")
+      ) {
+        window.location.href = `/votacion/votacion.html?id=${encodeURIComponent(
+          partidaId
+        )}`;
       }
     } else {
       alert(`Por favor, selecciona una imagen para ${jugador}.`);
@@ -176,4 +190,35 @@ function mostrarSelectorImagenes(jugador) {
   };
 
   imagenesDiv.appendChild(seleccionButton);
+}
+
+function traerSesiones(nombreJugador1, nombreJugador2) {
+  const sockets = io.sockets.sockets;
+
+  for (let [id, socket] of sockets) {
+    console.log("Verificando socket con ID:", id);
+
+    if (socket.handshake.session.user) {
+      console.log("Sesión encontrada:", socket.handshake.session.user);
+      const userName = socket.handshake.session.user.name;
+
+      if (userName == nombreJugador1) {
+        //logica para esconder elementos
+        console.log("ESCONDER 1");
+        disableContainer("container1");
+      } else if (userName == nombreJugador2) {
+        //logica para esconder elementos
+        console.log("ESCONDER 2");
+      }
+    } else {
+      console.log("Sesión no definida para el socket con ID:", id);
+    }
+  }
+}
+
+function disableContainer(containerId) {
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.classList.add("disabled-container");
+  }
 }

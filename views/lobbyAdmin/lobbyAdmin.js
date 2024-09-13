@@ -61,7 +61,7 @@ async function cargarTema(event) {
       }
 
       alert("Tema cargado con éxito.");
-      document.getElementById("temaInput").value = ""; // Limpiar el campo de entrada
+      document.getElementById("temaInput").value = "";
     } else {
       const errorMsg = await response.text();
       console.error("Error al cargar el tema:", errorMsg);

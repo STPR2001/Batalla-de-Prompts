@@ -97,11 +97,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("redireccionar", (url) => {
-    console.log(url);
-    window.location.href = url;
-  });
-
   socket.on("disconnect", () => {
     console.log("Un usuario se ha desconectado");
   });
