@@ -59,6 +59,11 @@ io.use(
 );
 
 io.on("connection", (socket) => {
+  var llegoImg1;
+  var llegoImg2;
+  var imagen1;
+  var imagen2;
+
   console.log("Un usuario se ha conectado");
 
   socket.on("unirseAlLobby", (nombreJugador) => {
@@ -78,22 +83,59 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("redirigirJugadores", (nombreJugador1, nombreJugador2, url) => {
-    const sockets = io.sockets.sockets;
+  socket.on(
+    "redirigirJugadores",
+    (nombreJugador1, nombreJugador2, url1, url2) => {
+      const sockets = io.sockets.sockets;
 
-    for (let [id, socket] of sockets) {
-      console.log("Verificando socket con ID:", id);
+      for (let [id, socket] of sockets) {
+        console.log("Verificando socket con ID:", id);
 
-      if (socket.handshake.session.user) {
-        console.log("Sesión encontrada:", socket.handshake.session.user);
-        const userName = socket.handshake.session.user.name;
+        if (socket.handshake.session.user) {
+          console.log("Sesión encontrada:", socket.handshake.session.user);
+          const userName = socket.handshake.session.user.name;
 
-        if (userName == nombreJugador1 || userName == nombreJugador2) {
-          socket.emit("redireccionar", url);
+          if (userName == nombreJugador1) {
+            socket.emit("redireccionar", url1);
+          } else if (userName == nombreJugador2) {
+            socket.emit("redireccionar", url2);
+          }
+        } else {
+          console.log("Sesión no definida para el socket con ID:", id);
         }
-      } else {
-        console.log("Sesión no definida para el socket con ID:", id);
       }
+    }
+  );
+
+  socket.on("imagenSeleccionada", (data) => {
+    console.log(`Imagen seleccionada por ${data.jugador}: ${data.imagen}`);
+    io.emit("actualizarImagen", data);
+  });
+
+  socket.on("imagenSeleccionadaJugador1", (data) => {
+    llegoImg1 = true;
+    if (llegoImg2 == true) {
+      console.log("ENTRO APP IF1");
+      socket.emit("SeSeleccionaron", {
+        imagen1: data.imagen,
+        imagen2: imagen2,
+      });
+    } else {
+      imagen1 = data.imagen;
+    }
+  });
+
+  socket.on("imagenSeleccionadaJugador2", (data) => {
+    console.log("Entro 2");
+    llegoImg2 = true;
+    if (llegoImg1 == true) {
+      console.log("ENTRO APP IF2");
+      socket.emit("SeSeleccionaron", {
+        imagen1: imagen1,
+        imagen2: data.imagen,
+      });
+    } else {
+      imagen2 = data.imagen;
     }
   });
 

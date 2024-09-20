@@ -116,7 +116,8 @@ async function iniciarPartida(event) {
           "redirigirJugadores",
           selectedPlayer1[0],
           selectedPlayer2[0],
-          `/partida/partida.html?id=${partidaId}`
+          `/partida1/partida1.html?id=${partidaId}`,
+          `/partida2/partida2.html?id=${partidaId}`
         );
 
         window.location.href = `/partida/partida.html?id=${partidaId}`;

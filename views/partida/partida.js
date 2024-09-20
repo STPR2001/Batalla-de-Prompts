@@ -27,45 +27,12 @@ async function traerDatosPartida(partidaId) {
       document.querySelector(".nombreJugador2").textContent = nombreJugador2;
 
       iniciarTemporizador(data.time);
-
-      traerSesiones(nombreJugador1, nombreJugador2);
-
-      let contadorJugador1 = 0;
-      let contadorJugador2 = 0;
-      const maxImagenes = data.cant_img;
-
-      document.getElementById("btnJugador1").onclick = function () {
-        if (contadorJugador1 < maxImagenes) {
-          generarImagen("Jugador1");
-          contadorJugador1++;
-          if (contadorJugador1 == maxImagenes) {
-            desactivarBoton("btnJugador1");
-          }
-        }
-      };
-
-      document.getElementById("btnJugador2").onclick = function () {
-        if (contadorJugador2 < maxImagenes) {
-          generarImagen("Jugador2");
-          contadorJugador2++;
-          if (contadorJugador2 == maxImagenes) {
-            desactivarBoton("btnJugador2");
-          }
-        }
-      };
     } else {
       console.error("Error al encontrar partida", response.statusText);
     }
   } catch (error) {
     console.error("Error al encontrar partida: ", error);
   }
-}
-
-function desactivarBoton(botonId) {
-  const boton = document.getElementById(botonId);
-  boton.disabled = true;
-  boton.style.backgroundColor = "gray";
-  boton.textContent = "Límite alcanzado";
 }
 
 async function traerTopic(topicId) {
@@ -91,46 +58,33 @@ async function traerTopic(topicId) {
   }
 }
 
-async function generarImagen(jugador) {
-  const inputId = `input${jugador}`;
-  const imagenesDiv = document.getElementById(`imagenes${jugador}`);
-  const prompt = document.getElementById(inputId).value;
+socket.on("actualizarImagen", (data) => {
+  if (data.jugador === "jugador1") {
+    const imagenesDiv = document.getElementById(`imagenesJugador1`);
+    const imageUrl = data.imagen;
 
-  if (!prompt) {
-    alert("Por favor, ingresa un texto.");
-    return;
+    const imgElement = document.createElement("img");
+    imgElement.src = imageUrl;
+    imgElement.alt = `Imagen generada para Jugador 1`;
+    imgElement.className = "img-thumbnail m-2";
+    imgElement.style.width = "100px";
+
+    imagenesDiv.appendChild(imgElement);
+    imagenesDiv.appendChild(radioInput);
+  } else if (data.jugador === "jugador2") {
+    const imagenesDiv = document.getElementById(`imagenesJugador2`);
+    const imageUrl = data.imagen;
+
+    const imgElement = document.createElement("img");
+    imgElement.src = imageUrl;
+    imgElement.alt = `Imagen generada para Jugador 2`;
+    imgElement.className = "img-thumbnail m-2";
+    imgElement.style.width = "100px";
+
+    imagenesDiv.appendChild(imgElement);
+    imagenesDiv.appendChild(radioInput);
   }
-
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(
-    prompt
-  )}`;
-
-  try {
-    const response = await fetch(url, { method: "GET" });
-
-    if (response.ok) {
-      const imageUrl = response.url;
-
-      const imgElement = document.createElement("img");
-      imgElement.src = imageUrl;
-      imgElement.alt = `Imagen generada para ${jugador}`;
-      imgElement.className = "img-thumbnail m-2";
-      imgElement.style.width = "100px";
-
-      const radioInput = document.createElement("input");
-      radioInput.type = "radio";
-      radioInput.name = `seleccion${jugador}`;
-      radioInput.value = imageUrl;
-
-      imagenesDiv.appendChild(imgElement);
-      imagenesDiv.appendChild(radioInput);
-    } else {
-      alert(`Error al generar la imagen: ${response.statusText}`);
-    }
-  } catch (error) {
-    alert("Ocurrió un error al conectar con la API.");
-  }
-}
+});
 
 function iniciarTemporizador(minutos) {
   const timerDisplay = document.getElementById("timerDisplay");
@@ -154,71 +108,10 @@ function iniciarTemporizador(minutos) {
   }, 1000);
 }
 
-function finalizarPartida() {
-  desactivarBoton("btnJugador1");
-  desactivarBoton("btnJugador2");
+function finalizarPartida() {}
 
-  mostrarSelectorImagenes("Jugador1");
-  mostrarSelectorImagenes("Jugador2");
-}
-
-function mostrarSelectorImagenes(jugador) {
-  const imagenesDiv = document.getElementById(`imagenes${jugador}`);
-  const seleccionButton = document.createElement("button");
-  seleccionButton.textContent = `Seleccionar imagen para ${jugador}`;
-  seleccionButton.className = "btn btn-success";
-
-  seleccionButton.onclick = function () {
-    const seleccion = document.querySelector(
-      `input[name="seleccion${jugador}"]:checked`
-    );
-    if (seleccion) {
-      sessionStorage.setItem(`seleccion${jugador}`, seleccion.value);
-      alert(`${jugador} ha seleccionado su imagen.`);
-
-      if (
-        sessionStorage.getItem("seleccionJugador1") &&
-        sessionStorage.getItem("seleccionJugador2")
-      ) {
-        window.location.href = `/votacion/votacion.html?id=${encodeURIComponent(
-          partidaId
-        )}`;
-      }
-    } else {
-      alert(`Por favor, selecciona una imagen para ${jugador}.`);
-    }
-  };
-
-  imagenesDiv.appendChild(seleccionButton);
-}
-
-function traerSesiones(nombreJugador1, nombreJugador2) {
-  const sockets = io.sockets.sockets;
-
-  for (let [id, socket] of sockets) {
-    console.log("Verificando socket con ID:", id);
-
-    if (socket.handshake.session.user) {
-      console.log("Sesión encontrada:", socket.handshake.session.user);
-      const userName = socket.handshake.session.user.name;
-
-      if (userName == nombreJugador1) {
-        //logica para esconder elementos
-        console.log("ESCONDER 1");
-        disableContainer("container1");
-      } else if (userName == nombreJugador2) {
-        //logica para esconder elementos
-        console.log("ESCONDER 2");
-      }
-    } else {
-      console.log("Sesión no definida para el socket con ID:", id);
-    }
-  }
-}
-
-function disableContainer(containerId) {
-  const container = document.getElementById(containerId);
-  if (container) {
-    container.classList.add("disabled-container");
-  }
-}
+socket.on("SeSeleccionaron", (data) => {
+  console.log("IMAGENES");
+  console.log(data.imagen1);
+  console.log(data.imagen2);
+});
