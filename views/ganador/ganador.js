@@ -1,0 +1,1 @@
+document.getElementById("imagenGanador").src = localStorage.getItem("ganador");

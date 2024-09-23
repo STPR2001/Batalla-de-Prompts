@@ -1,5 +1,3 @@
-console.log("hola mundo");
-
 const socket = io();
 
 socket.on("connect", () => {

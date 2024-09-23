@@ -1,12 +1,35 @@
-//SIN TERMINAR
+const socket = io();
+const params = new URLSearchParams(window.location.search);
+const partidaId = params.get("id");
+traerDatosPartida(partidaId);
+let nombreJugador1, nombreJugador2;
+
+async function traerDatosPartida(partidaId) {
+  const url = `http://localhost:3000/api/game/findById/${encodeURIComponent(
+    partidaId
+  )}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data);
+
+      nombreJugador1 = data.player1;
+      nombreJugador2 = data.player2;
+    } else {
+      console.error("Error al encontrar partida", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error al encontrar partida: ", error);
+  }
+}
 
 window.onload = function () {
-    const imagenJugador1 = sessionStorage.getItem("seleccionJugador1");
-    const imagenJugador2 = sessionStorage.getItem("seleccionJugador2");
-  
-    document.getElementById("imagenJugador1").src = imagenJugador1;
-    document.getElementById("imagenJugador2").src = imagenJugador2;
-  
+
     document.getElementById("btnGanadorJugador1").onclick = function () {
       actualizarGanador("Jugador 1");
     };
@@ -33,7 +56,19 @@ window.onload = function () {
   
       if (response.ok) {
         alert(`${ganador} ha sido seleccionado como el ganador.`);
-        window.location.href = "pantalla-final.html";
+        socket.emit(
+          "redirigirJugadoresAGanador",
+          nombreJugador1,
+          nombreJugador2,
+          `/ganador/ganador.html?id=${partidaId}`,
+          document.getElementById("imagenJugador1").src
+        );
+        if(`${ganador}`==="Jugador 1"){
+          localStorage.setItem("ganador", document.getElementById("imagenJugador1").src);
+        }else{
+          localStorage.setItem("ganador", document.getElementById("imagenJugador2").src);
+        }
+        window.location.href = `/ganador/ganador.html?id=${partidaId}`;
       } else {
         alert("Error al seleccionar ganador.");
       }
@@ -42,3 +77,10 @@ window.onload = function () {
     }
   }
   
+  socket.on("votacion", (data) => {
+    if (data.jugador === "jugador1") {
+      document.getElementById("imagenJugador1").src = data.imagen;
+    } else if (data.jugador === "jugador2"){
+      document.getElementById("imagenJugador2").src = data.imagen;
+    }
+  });

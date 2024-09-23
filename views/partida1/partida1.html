@@ -33,6 +33,12 @@
         pointer-events: none;
         opacity: 0.5;
       }
+
+      .seleccion{
+        font-size: 14px;
+        padding: 5px;
+        padding-top: 5px;
+      }
     </style>
   </head>
   <body>
@@ -42,23 +48,19 @@
     </div>
 
     <div class="container">
-      <div class="row">
-        <div class="col-md-6 border-end" id="container1">
-          <h2 class="nombreJugador1">Jugador 1</h2>
-          <input
-            type="text"
-            id="inputJugador1"
-            class="form-control mb-3"
-            placeholder="Ingresa tu texto aquí"
-          />
-          <button id="btnJugador1" class="btn btn-primary">
-            Generar Imagen
-          </button>
-          <div class="mt-3">
-            <h4>Imágenes generadas</h4>
-            <div id="imagenesJugador1" class="d-flex flex-wrap"></div>
-          </div>
-        </div>
+      <h2 class="nombreJugador1">Jugador 1</h2>
+      <input
+        type="text"
+        id="inputJugador1"
+        class="form-control mb-3"
+        placeholder="Ingresa tu texto aquí"
+      />
+      <button id="btnJugador1" class="btn btn-primary">
+        Generar Imagen
+      </button>
+      <div class="mt-3">
+        <h4>Imágenes generadas</h4>
+        <div id="imagenesJugador1" class="d-flex flex-wrap"></div>
       </div>
     </div>
 

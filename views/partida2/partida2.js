@@ -22,11 +22,10 @@ async function traerDatosPartida(partidaId) {
       temaAleatorio.innerHTML = await traerTopic(data.topic);
 
       const nombreJugador2 = data.player2;
+      socket.emit("esperarVotacion", nombreJugador2);
       document.querySelector(".nombreJugador2").textContent = nombreJugador2;
 
       iniciarTemporizador(data.time);
-
-      //traerSesiones(nombreJugador1, nombreJugador2);
 
       let contadorJugador2 = 0;
       const maxImagenes = data.cant_img;
@@ -53,6 +52,7 @@ function desactivarBoton(botonId) {
   boton.disabled = true;
   boton.style.backgroundColor = "gray";
   boton.textContent = "Límite alcanzado";
+  mostrarSelectorImagenes("Jugador2");
 }
 
 async function traerTopic(topicId) {
@@ -147,9 +147,10 @@ function iniciarTemporizador(minutos) {
 }
 
 function finalizarPartida() {
-  desactivarBoton("btnJugador2");
-
-  mostrarSelectorImagenes("Jugador2");
+  const boton = document.getElementById(botonId);
+  if(boton.disabled==false){
+    desactivarBoton("btnJugador2");
+  }
 }
 
 function mostrarSelectorImagenes(jugador) {
@@ -168,7 +169,8 @@ function mostrarSelectorImagenes(jugador) {
 
       if (sessionStorage.getItem("seleccionJugador2")) {
         imagenSeleccionada = seleccion.value;
-        socket.emit("imagenSeleccionadaJugador2", {
+        socket.emit("imagenFinal", {
+          jugador: "jugador2",
           imagen: imagenSeleccionada,
         });
       }
@@ -179,3 +181,7 @@ function mostrarSelectorImagenes(jugador) {
 
   imagenesDiv.appendChild(seleccionButton);
 }
+
+socket.on("redireccionar", (url) => {
+  window.location.href = url;
+});

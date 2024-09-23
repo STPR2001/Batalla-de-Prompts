@@ -16,7 +16,7 @@ socket.on("actualizarListaJugadores1", (jugadores) => {
 
 socket.on("actualizarListaJugadores2", (jugadores) => {
   const listaJugadores = document.getElementById("listaJugadores2");
-  listaJugadores2.innerHTML = ""; // Limpiar la lista
+  listaJugadores2.innerHTML = "";
 
   jugadores.forEach((jugador) => {
     const option = document.createElement("option");

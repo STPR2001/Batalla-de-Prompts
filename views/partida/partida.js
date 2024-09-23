@@ -108,7 +108,9 @@ function iniciarTemporizador(minutos) {
   }, 1000);
 }
 
-function finalizarPartida() {}
+function irAVotacion(){
+  window.location.href = `/votacion/votacion.html?id=${partidaId}`;
+}
 
 socket.on("SeSeleccionaron", (data) => {
   console.log("IMAGENES");

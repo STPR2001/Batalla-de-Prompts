@@ -22,11 +22,10 @@ async function traerDatosPartida(partidaId) {
       temaAleatorio.innerHTML = await traerTopic(data.topic);
 
       const nombreJugador1 = data.player1;
+      socket.emit("esperarVotacion", nombreJugador1);
       document.querySelector(".nombreJugador1").textContent = nombreJugador1;
 
       iniciarTemporizador(data.time);
-
-      //traerSesiones(nombreJugador1, nombreJugador2);
 
       let contadorJugador1 = 0;
       const maxImagenes = data.cant_img;
@@ -53,6 +52,7 @@ function desactivarBoton(botonId) {
   boton.disabled = true;
   boton.style.backgroundColor = "gray";
   boton.textContent = "Límite alcanzado";
+  mostrarSelectorImagenes("Jugador1");
 }
 
 async function traerTopic(topicId) {
@@ -147,16 +147,17 @@ function iniciarTemporizador(minutos) {
 }
 
 function finalizarPartida() {
-  desactivarBoton("btnJugador1");
-
-  mostrarSelectorImagenes("Jugador1");
+  const boton = document.getElementById(botonId);
+  if(boton.disabled==false){
+    desactivarBoton("btnJugador1");
+  }
 }
 
 function mostrarSelectorImagenes(jugador) {
   const imagenesDiv = document.getElementById(`imagenes${jugador}`);
   const seleccionButton = document.createElement("button");
   seleccionButton.textContent = `Seleccionar imagen para ${jugador}`;
-  seleccionButton.className = "btn btn-success";
+  seleccionButton.className = "btn btn-success seleccion";
 
   seleccionButton.onclick = function () {
     const seleccion = document.querySelector(
@@ -167,9 +168,9 @@ function mostrarSelectorImagenes(jugador) {
       alert(`${jugador} ha seleccionado su imagen.`);
 
       if (sessionStorage.getItem("seleccionJugador1")) {
-        console.log("ENTROOO");
         imagenSeleccionada = seleccion.value;
-        socket.emit("imagenSeleccionadaJugador1", {
+        socket.emit("imagenFinal", {
+          jugador: "jugador1",
           imagen: imagenSeleccionada,
         });
       }
@@ -181,36 +182,6 @@ function mostrarSelectorImagenes(jugador) {
   imagenesDiv.appendChild(seleccionButton);
 }
 
-/*
-
-function traerSesiones(nombreJugador1, nombreJugador2) {
-  const sockets = io.sockets.sockets;
-
-  for (let [id, socket] of sockets) {
-    console.log("Verificando socket con ID:", id);
-
-    if (socket.handshake.session.user) {
-      console.log("Sesión encontrada:", socket.handshake.session.user);
-      const userName = socket.handshake.session.user.name;
-
-      if (userName == nombreJugador1) {
-        //logica para esconder elementos
-        console.log("ESCONDER 1");
-        disableContainer("container1");
-      } else if (userName == nombreJugador2) {
-        //logica para esconder elementos
-        console.log("ESCONDER 2");
-      }
-    } else {
-      console.log("Sesión no definida para el socket con ID:", id);
-    }
-  }
-}
-
-function disableContainer(containerId) {
-  const container = document.getElementById(containerId);
-  if (container) {
-    container.classList.add("disabled-container");
-  }
-}
-  */
+socket.on("redireccionar", (url) => {
+  window.location.href = url;
+});

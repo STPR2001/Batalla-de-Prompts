@@ -14,13 +14,12 @@ const user = require("./routes/user.route");
 const topic = require("./routes/topic.route");
 const game = require("./routes/game.route");
 
-// Define the CORS options
 const corsOptions = {
   credentials: true,
-  origin: ["https://api.cloudflare.com"], // Whitelist the domains you want to allow
+  origin: ["https://api.cloudflare.com"],
 };
 
-app.use(cors(corsOptions)); // Use the cors middleware with your options
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,18 +39,17 @@ app.get("/api", function (req, res) {
 });
 
 const jugadores = [];
+const jugadoresEsperandoVotacion = [];
 
-// Configurar express-session
 const sessionMiddleware = session({
   secret: "your-secret-key",
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false }, // Asegúrate de configurar 'secure: true' si estás usando HTTPS
+  cookie: { secure: false },
 });
 
 app.use(sessionMiddleware);
 
-// Compartir la sesión de express con Socket.io
 io.use(
   sharedSession(sessionMiddleware, {
     autoSave: true,
@@ -59,10 +57,6 @@ io.use(
 );
 
 io.on("connection", (socket) => {
-  var llegoImg1;
-  var llegoImg2;
-  var imagen1;
-  var imagen2;
 
   console.log("Un usuario se ha conectado");
 
@@ -107,36 +101,50 @@ io.on("connection", (socket) => {
     }
   );
 
+  socket.on("esperarVotacion", (nombreJugador) => {
+    jugadoresEsperandoVotacion.push(nombreJugador);
+    console.log(`Jugador ${nombreJugador} esta esperando la votación`);
+
+    io.emit("actualizarListaJugadores1", jugadoresEsperandoVotacion);
+    io.emit("actualizarListaJugadores2", jugadoresEsperandoVotacion);
+
+    socket.handshake.session.user = { name: nombreJugador };
+    socket.handshake.session.save((err) => {
+      if (err) {
+        console.error("Error al guardar la sesión:", err);
+      } else {
+        console.log("Sesión guardada para el jugador:", nombreJugador);
+      }
+    });
+  });
+
+  socket.on("redirigirJugadoresAGanador", (nombreJugador1, nombreJugador2, url, imagen) => {
+      const sockets2 = io.sockets.sockets;
+      for (let [id, socket] of sockets2) {
+        console.log("Verificando socket con ID:", id);
+
+        if (socket.handshake.session.user) {
+          console.log("Sesión encontrada:", socket.handshake.session.user);
+          const userName = socket.handshake.session.user.name;
+          socket.emit("redireccionar", url);
+        } else {
+          console.log("Sesión no definida para el socket con ID:", id);
+        }
+      }
+    }
+  );
+
   socket.on("imagenSeleccionada", (data) => {
     console.log(`Imagen seleccionada por ${data.jugador}: ${data.imagen}`);
     io.emit("actualizarImagen", data);
   });
 
-  socket.on("imagenSeleccionadaJugador1", (data) => {
-    llegoImg1 = true;
-    if (llegoImg2 == true) {
-      console.log("ENTRO APP IF1");
-      socket.emit("SeSeleccionaron", {
-        imagen1: data.imagen,
-        imagen2: imagen2,
-      });
-    } else {
-      imagen1 = data.imagen;
-    }
+  socket.on("imagenFinal", (data) => {
+    io.emit("votacion", data);
   });
 
-  socket.on("imagenSeleccionadaJugador2", (data) => {
-    console.log("Entro 2");
-    llegoImg2 = true;
-    if (llegoImg1 == true) {
-      console.log("ENTRO APP IF2");
-      socket.emit("SeSeleccionaron", {
-        imagen1: imagen1,
-        imagen2: data.imagen,
-      });
-    } else {
-      imagen2 = data.imagen;
-    }
+  socket.on("elegirGanador", (data) => {
+    io.emit("ganador", data);
   });
 
   socket.on("disconnect", () => {
