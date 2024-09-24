@@ -148,15 +148,15 @@ function iniciarTemporizador(minutos) {
 
 function finalizarPartida() {
   const boton = document.getElementById(botonId);
-  if(boton.disabled==false){
+  if (boton.disabled == false) {
     desactivarBoton("btnJugador1");
   }
 }
 
 function mostrarSelectorImagenes(jugador) {
-  const imagenesDiv = document.getElementById(`imagenes${jugador}`);
+  const botonSeleccionar = document.getElementById(`botonSeleccionar`);
   const seleccionButton = document.createElement("button");
-  seleccionButton.textContent = `Seleccionar imagen para ${jugador}`;
+  seleccionButton.textContent = `Seleccione una imagen`;
   seleccionButton.className = "btn btn-success seleccion";
 
   seleccionButton.onclick = function () {
@@ -165,7 +165,7 @@ function mostrarSelectorImagenes(jugador) {
     );
     if (seleccion) {
       sessionStorage.setItem(`seleccion${jugador}`, seleccion.value);
-      alert(`${jugador} ha seleccionado su imagen.`);
+      alert(`Imagen seleccionada`);
 
       if (sessionStorage.getItem("seleccionJugador1")) {
         imagenSeleccionada = seleccion.value;
@@ -179,7 +179,7 @@ function mostrarSelectorImagenes(jugador) {
     }
   };
 
-  imagenesDiv.appendChild(seleccionButton);
+  botonSeleccionar.appendChild(seleccionButton);
 }
 
 socket.on("redireccionar", (url) => {
