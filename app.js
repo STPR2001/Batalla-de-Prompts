@@ -57,7 +57,6 @@ io.use(
 );
 
 io.on("connection", (socket) => {
-
   console.log("Un usuario se ha conectado");
 
   socket.on("unirseAlLobby", (nombreJugador) => {
@@ -75,6 +74,10 @@ io.on("connection", (socket) => {
         console.log("Sesión guardada para el jugador:", nombreJugador);
       }
     });
+  });
+
+  socket.on("jugadorEscribiendo", (data) => {
+    io.emit("actualizacionAdmin", data);
   });
 
   socket.on(
@@ -118,7 +121,9 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("redirigirJugadoresAGanador", (nombreJugador1, nombreJugador2, url, imagen) => {
+  socket.on(
+    "redirigirJugadoresAGanador",
+    (nombreJugador1, nombreJugador2, url, imagen) => {
       const sockets2 = io.sockets.sockets;
       for (let [id, socket] of sockets2) {
         console.log("Verificando socket con ID:", id);

@@ -58,6 +58,33 @@ async function traerTopic(topicId) {
   }
 }
 
+socket.on("actualizacionAdmin", (data) => {
+  const { jugador, prompt } = data;
+
+  // Actualizar la interfaz para mostrar lo que está escribiendo cada jugador
+  if (jugador === "Jugador1") {
+    const contenedor = document.getElementById("escribiendoJugador1");
+    const texto = document.getElementById("textoJugador1");
+    texto.textContent = prompt;
+    contenedor.style.display = "block"; // Mostrar el contenedor
+
+    // Ocultar el contenedor si el jugador deja de escribir
+    setTimeout(() => {
+      contenedor.style.display = "none";
+    }, 3000); // Ocultar después de 3 segundos
+  } else if (jugador === "Jugador2") {
+    const contenedor = document.getElementById("escribiendoJugador2");
+    const texto = document.getElementById("textoJugador2");
+    texto.textContent = prompt;
+    contenedor.style.display = "block"; // Mostrar el contenedor
+
+    // Ocultar el contenedor si el jugador deja de escribir
+    setTimeout(() => {
+      contenedor.style.display = "none";
+    }, 3000); // Ocultar después de 3 segundos
+  }
+});
+
 socket.on("actualizarImagen", (data) => {
   if (data.jugador === "jugador1") {
     const imagenesDiv = document.getElementById(`imagenesJugador1`);
@@ -108,7 +135,7 @@ function iniciarTemporizador(minutos) {
   }, 1000);
 }
 
-function irAVotacion(){
+function irAVotacion() {
   window.location.href = `/votacion/votacion.html?id=${partidaId}`;
 }
 

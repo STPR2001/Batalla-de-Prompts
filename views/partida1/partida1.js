@@ -27,6 +27,9 @@ async function traerDatosPartida(partidaId) {
 
       iniciarTemporizador(data.time);
 
+      const cantidadImagenes = document.getElementById("cantidadImagenes");
+      cantidadImagenes.textContent = `Límite de imágenes: ${data.cant_img}`;
+
       let contadorJugador1 = 0;
       const maxImagenes = data.cant_img;
 
@@ -88,6 +91,10 @@ async function generarImagen(jugador) {
     return;
   }
 
+  socket.emit("jugadorEscribiendo", { jugador, prompt });
+
+  loader.style.display = "block";
+
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(
     prompt
   )}`;
@@ -121,6 +128,8 @@ async function generarImagen(jugador) {
     }
   } catch (error) {
     alert("Ocurrió un error al conectar con la API.");
+  } finally {
+    loader.style.display = "none";
   }
 }
 
