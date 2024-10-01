@@ -3,6 +3,7 @@ const params = new URLSearchParams(window.location.search);
 const partidaId = params.get("id");
 traerDatosPartida(partidaId);
 let nombreJugador1, nombreJugador2;
+socket.emit('joinRoom', partidaId);
 
 async function traerDatosPartida(partidaId) {
   const url = `http://localhost:3000/api/game/findById/${encodeURIComponent(
@@ -31,15 +32,15 @@ async function traerDatosPartida(partidaId) {
 window.onload = function () {
 
     document.getElementById("btnGanadorJugador1").onclick = function () {
-      actualizarGanador("Jugador 1");
+      actualizarGanador("Jugador 1", nombreJugador1);
     };
   
     document.getElementById("btnGanadorJugador2").onclick = function () {
-      actualizarGanador("Jugador 2");
+      actualizarGanador("Jugador 2", nombreJugador2);
     };
   };
   
-  async function actualizarGanador(ganador) {
+  async function actualizarGanador(ganador, nombreJugador) {
     const params = new URLSearchParams(window.location.search);
     const partidaId = params.get("id");
   
@@ -51,22 +52,25 @@ window.onload = function () {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ winner: ganador }),
+        body: JSON.stringify({ winner: nombreJugador }),
       });
   
       if (response.ok) {
-        alert(`${ganador} ha sido seleccionado como el ganador.`);
+        alert(`${nombreJugador} ha sido seleccionado como el ganador.`);
         socket.emit(
           "redirigirJugadoresAGanador",
           nombreJugador1,
           nombreJugador2,
           `/ganador/ganador.html?id=${partidaId}`,
+          partidaId,
           document.getElementById("imagenJugador1").src
         );
         if(`${ganador}`==="Jugador 1"){
           localStorage.setItem("ganador", document.getElementById("imagenJugador1").src);
+          localStorage.setItem("ganadorJugador", nombreJugador1);
         }else{
           localStorage.setItem("ganador", document.getElementById("imagenJugador2").src);
+          localStorage.setItem("ganadorJugador", nombreJugador2);
         }
         window.location.href = `/ganador/ganador.html?id=${partidaId}`;
       } else {

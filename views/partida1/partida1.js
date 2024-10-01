@@ -3,6 +3,7 @@ const params = new URLSearchParams(window.location.search);
 const partidaId = params.get("id");
 console.log("ID de la partida:", partidaId);
 traerDatosPartida(partidaId);
+socket.emit('joinRoom', partidaId);
 
 async function traerDatosPartida(partidaId) {
   const url = `http://localhost:3000/api/game/findById/${encodeURIComponent(
@@ -91,7 +92,7 @@ async function generarImagen(jugador) {
     return;
   }
 
-  socket.emit("jugadorEscribiendo", { jugador, prompt });
+  socket.emit("jugadorEscribiendo", { roomId: partidaId, jugador, prompt });
 
   loader.style.display = "block";
 
@@ -120,6 +121,7 @@ async function generarImagen(jugador) {
       imagenesDiv.appendChild(radioInput);
 
       socket.emit("imagenSeleccionada", {
+        roomId: partidaId,
         jugador: "jugador1",
         imagen: imageUrl,
       });
@@ -179,6 +181,7 @@ function mostrarSelectorImagenes(jugador) {
       if (sessionStorage.getItem("seleccionJugador1")) {
         imagenSeleccionada = seleccion.value;
         socket.emit("imagenFinal", {
+          roomId: partidaId,
           jugador: "jugador1",
           imagen: imagenSeleccionada,
         });

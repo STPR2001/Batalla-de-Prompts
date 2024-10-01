@@ -3,6 +3,7 @@ const params = new URLSearchParams(window.location.search);
 const partidaId = params.get("id");
 console.log("ID de la partida:", partidaId);
 traerDatosPartida(partidaId);
+socket.emit('joinRoom', partidaId);
 
 async function traerDatosPartida(partidaId) {
   const url = `http://localhost:3000/api/game/findById/${encodeURIComponent(
@@ -61,27 +62,24 @@ async function traerTopic(topicId) {
 socket.on("actualizacionAdmin", (data) => {
   const { jugador, prompt } = data;
 
-  // Actualizar la interfaz para mostrar lo que está escribiendo cada jugador
   if (jugador === "Jugador1") {
     const contenedor = document.getElementById("escribiendoJugador1");
     const texto = document.getElementById("textoJugador1");
     texto.textContent = prompt;
-    contenedor.style.display = "block"; // Mostrar el contenedor
+    contenedor.style.display = "block";
 
-    // Ocultar el contenedor si el jugador deja de escribir
     setTimeout(() => {
       contenedor.style.display = "none";
-    }, 3000); // Ocultar después de 3 segundos
+    }, 3000);
   } else if (jugador === "Jugador2") {
     const contenedor = document.getElementById("escribiendoJugador2");
     const texto = document.getElementById("textoJugador2");
     texto.textContent = prompt;
-    contenedor.style.display = "block"; // Mostrar el contenedor
+    contenedor.style.display = "block";
 
-    // Ocultar el contenedor si el jugador deja de escribir
     setTimeout(() => {
       contenedor.style.display = "none";
-    }, 3000); // Ocultar después de 3 segundos
+    }, 3000);
   }
 });
 

@@ -76,8 +76,13 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`Socket ${socket.id} joined room ${roomId}`);
+});
+
   socket.on("jugadorEscribiendo", (data) => {
-    io.emit("actualizacionAdmin", data);
+    io.to(data.roomId).emit("actualizacionAdmin", data);
   });
 
   socket.on(
@@ -123,7 +128,7 @@ io.on("connection", (socket) => {
 
   socket.on(
     "redirigirJugadoresAGanador",
-    (nombreJugador1, nombreJugador2, url, imagen) => {
+    (nombreJugador1, nombreJugador2, url, roomId, imagen) => {
       const sockets2 = io.sockets.sockets;
       for (let [id, socket] of sockets2) {
         console.log("Verificando socket con ID:", id);
@@ -131,7 +136,7 @@ io.on("connection", (socket) => {
         if (socket.handshake.session.user) {
           console.log("Sesión encontrada:", socket.handshake.session.user);
           const userName = socket.handshake.session.user.name;
-          socket.emit("redireccionar", url);
+          io.to(roomId).emit("redireccionar", url);
         } else {
           console.log("Sesión no definida para el socket con ID:", id);
         }
@@ -140,16 +145,16 @@ io.on("connection", (socket) => {
   );
 
   socket.on("imagenSeleccionada", (data) => {
-    console.log(`Imagen seleccionada por ${data.jugador}: ${data.imagen}`);
-    io.emit("actualizarImagen", data);
+    console.log(`Imagen seleccionada por ${data.jugador}: ${data.imagen} en la sala ${data.roomId}`);
+    io.to(data.roomId).emit("actualizarImagen", data);
   });
 
   socket.on("imagenFinal", (data) => {
-    io.emit("votacion", data);
+    io.to(data.roomId).emit("votacion", data);
   });
 
   socket.on("elegirGanador", (data) => {
-    io.emit("ganador", data);
+    io.to(data.roomId).emit("ganador", data);
   });
 
   socket.on("disconnect", () => {
